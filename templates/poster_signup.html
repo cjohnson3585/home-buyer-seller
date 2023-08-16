@@ -1,0 +1,50 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Store</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class='container'>
+
+      <div class="jumbotron" style="width: 400px; font-size: 1.0rem; padding: 0% 0% 0% 0%;">  
+        <p>SignUp</p>
+        <p style="color: red;font-size: large;"><b>{{msg}}</b></p>
+        <form method="POST" action="/poster_signup">
+            {{ form.csrf_token }}
+            <p> *{{ form.username.label }}:  {{ form.username(size=20) }}</p>
+            <p> *{{ form.email.label }}:  {{ form.email(size=20) }}</p>
+            <p> {{ form.phonenumber.label }}:  {{ form.phonenumber(size=20) }}</p>
+            <p> {{ form.firstname.label }}:  {{ form.firstname(size=20) }}</p>
+            <p> {{ form.lastname.label }}:  {{ form.lastname(size=20) }}</p>
+            <p> {{ form.city.label }}:  {{ form.city(size=20) }}</p>
+            <p> {{ form.state.label }}:  {{ form.state(size=20) }}</p>
+            <p> *{{ form.password.label }}:  {{ form.password(size=20) }}</p>
+            <p><input type="submit" value="SignUp"></p>
+            <p> * = Required</p>
+        </form>
+      </div>
+
+      <script src="https://js.stripe.com/v3/"></script>
+      <script src="{{ url_for('static', filename='script-ajax.js') }}"></script>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>
+{% endblock %}

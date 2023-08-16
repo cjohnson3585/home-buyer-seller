@@ -1,0 +1,50 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<div class="jumbotron" style="width: 400px; font-size: 1.0rem; padding: 0% 0% 0% 0%;">
+  <p><b>User Profile</b></p>
+  <p style="color: red;font-size: large;"><b>{{msg}}</b></p>
+  <hr>
+  <form method="POST" action="/save_profile_changes">
+  {% for pd in poster_data%}
+            <p>{{ form.username.label }}: <input type="text" name="username" value= {{ pd.username }}></p>
+            <p>{{ form.email.label }}: <input type="text" name="email" value= {{ pd.email }}></p>
+            <p>{{ form.phonenumber.label }}: <input type="text" name="phonenumber" value= {{ pd.phonenumber }}></p>
+            <p>{{ form.firstname.label }}: <input type="text" name="firstname" value= {{ pd.firstname }}></p>
+            <p>{{ form.lastname.label }}: <input type="text" name="lastname" value= {{ pd.lastname }}></p>
+            <p>{{ form.city.label }}: <input type="text" name="city" value= {{ pd.city }}></p>
+            <p>{{ form.state.label }}: <input type="text" name="state" value= {{ pd.state }}></p>
+  {% endfor%}
+  <hr>
+  <p><input type="submit" value="Save Changes"></p>
+</div>
+{% endblock %}
+
+{% block loggedin %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    
+      <div>
+        <p><b>Logged In as:</b> {{poster}}</p>
+      </div>
+
+     
+
+  </body>
+</html>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Store</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class='container'>
+
+      <div class="jumbotron">
+        <p>LogIn</p>
+        <form method="POST" action="/poster_login">
+            {{ form.csrf_token }}
+            <p> {{ form.username.label }} {{ form.username(size=20) }}</p>
+            <p> {{ form.password.label }} {{ form.password(size=20) }}</p>
+            <p><input type="submit" value="Login"></p>
+            <p></p>
+            <p><a class="nav-link active" href="{{ url_for('poster_signup') }}">Sign Up for a Free Job Poster Account</a></p>
+        </form>
+      </div>
+
+      <script src="https://js.stripe.com/v3/"></script>
+      <script src="{{ url_for('static', filename='script-ajax.js') }}"></script>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>
+{% endblock %}

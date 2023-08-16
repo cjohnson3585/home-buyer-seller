@@ -1,0 +1,38 @@
+{% extends "base7.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+    <p style="background-color: white;font-size: 20px; width: 1500px; text-align: center;"><b>Job Posting ID: {{jobid}}</b></p>
+
+        <div class="jumbotron" style="width: 1500px;padding: 20% 20% 20% 0%;">
+            <p style="background-color: lightblue;font-size: 20px; width: 1500px; text-align: center;">Job Posting Specifics</p>
+            <p style="font-size: 20px; width: 1500px; text-align: left;">{{long_desc}}</p>
+        </div>
+  
+  
+
+  </body>
+</html>
+{% endblock %}
+
+{% block loggedin %}
+      <div>
+        <p><b>Logged In as:</b> {{poster}}</p>
+      </div>
+{% endblock %}

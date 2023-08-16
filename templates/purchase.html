@@ -1,0 +1,40 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Store</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="container">
+      
+      <div class="jumbotron">
+        <h1 class="display-3">Job Posting</h1>
+        <p class="lead">Purchase a Yearly Subscription of Job Posting lasting 365 days for only $12.00.</p>
+        <a href="#" id="buy_now_btn" class="btn btn-primary">Buy Now</a>
+      </div>
+
+    <div>{{post_data}}</div>
+      <script src="https://js.stripe.com/v3/"></script>
+      <script src="{{ url_for('static', filename='script-ajax.js') }}">
+      post_data = JSON.parse({{ post_data | tojson }})
+        </script>
+
+    </div> <!-- /container -->
+  </body>
+</html>
+{% endblock %}

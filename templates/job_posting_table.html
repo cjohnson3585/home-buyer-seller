@@ -1,0 +1,62 @@
+{% extends "base5.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Store</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div><p style="background-color: lightblue;font-size: 20px; width: 1500px; text-align: center;">Current Job Postings</p></div>
+
+
+  <table id="data" class="table table-striped" style="width: 1500px; font-size: 12px;">
+    <thead>
+      <tr>
+        <th>Job ID </th>
+        <th>Website/Webapp URL</th>
+        <th>Company Description</th>
+        <th>Job Type</th>
+        <th>Job Description</th>
+        <th>Job Duration </th>
+        <th>Start Date</th>
+        <th>Compensation</th>
+        <th>Contact Email </th>
+        <th>Contact Phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for jp in jobpost %}
+        <tr>
+          <td><a href="/job_information/{{ jp.jobid }}" style="color: blue;">{{ jp.jobid }}</a></td>
+          <td><a href={{ jp.website }} style="color:blue" target="_blank" rel="noopener noreferrer">{{ jp.website }}</a></td>
+          <td>{{ jp.companydescription }}</td>
+          <td>{{ jp.jobtype }}</td>
+          <td>{{ jp.jobdescription }}</td>
+          <td>{{ jp.jobduration }}</td>
+          <td>{{ jp.startdate }}</td>
+          <td>{{ jp.payoffered }}</td>
+          <td>*******</td>
+          <td>********</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+  </body>
+</html>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base3.html" %}
+
+{% block currentjobpostings %}
+<h2 style="text-align: center"> Edit Post</h2>
+{% endblock %}
+
+{% block loggedin %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    
+      <div>
+        <p><b>Logged In as:</b> {{poster}}</p>
+      </div>
+
+
+  </body>
+</html>
+{% endblock %}
+
+{% block postinginformation %}
+<div class='container'>
+    <div class="jumbotron" style="width: 1000px; font-size: 1.0rem; padding: 0% 0% 0% 0%;">  
+      <p><b>Job Posting Information</b></p>
+      <p style="color: red;font-size: large;"><b>{{msg}}</b></p>
+      <hr>
+      <form method="POST" action="/save_post_changes/{{ pi.jobid }}">
+          {{ form.csrf_token }}
+          <p>* Job ID: <input type="text" name="jobid" value= {{ pi.jobid  }}></p>
+          <p> * Contact Email:  <input type="text" name="contactemail" value= {{ pi.contactemail  }}></p>
+          <p> * Contact Phone:  <input type="text" name="contactphone" value= {{ pi.contactphone  }}></p>
+          <p> * Website:  <input type="text" name="website" value= {{ pi.website  }}></p>
+          <p> * Company Description:  <input type="text" name="companydescription" value= {{ pi.companydescription  }}></p>
+          <p> * Job Type:  <input type="text" name="jobtype" value= {{ pi.jobtype  }}></p>
+          <p> * Job Description:  <input type="text" name="jobdescription" value= {{ pi.jobdescription }}></p>
+          <p> * Pay Offered:  <input type="text" name="payoffered" value= {{ pi.payoffered  }}></p>
+          <p> * Job Duration:  <input type="text" name="jobduration" value= {{ pi.jobduration  }}></p>
+          <p> * Job Specifics (skill set, languages, etc.):  <input type="text" name="longdescription" value= {{ pi.longdescription  }}></p>
+          <p> * Start Date:  <input type="text" name="startdate" value= {{ pi.startdate  }}></p>
+          <hr>
+          <p><input type="submit" value="Save Changes"></p>
+          <p> * = Required</p>
+      </form>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="{{ url_for('static', filename='script-ajax.js') }}"></script>
+
+  </div> <!-- /container -->
+{% endblock %}

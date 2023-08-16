@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body style="background-color: lightblue;">
+
+    <div class="container">
+
+      <div class="row">
+
+        <div class="col-md-6">
+          <div class="jumbotron">
+              <a class="nav-link active" href="{{ url_for('user_login', variable='post') }}"> I Want to Post a Job</a>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="jumbotron">
+             <a class="nav-link active" href="{{ url_for('user_login', variable='login') }}"> I am a Job Seeker</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="jumbotron">
+          <a class="nav-link active" href="{{ url_for('job_posting_table') }}"> I Just Want to Browse Current Jobs</a>
+      </div>
+
+    </div>
+
+  </body>
+</html>
+
+{% endblock %}
