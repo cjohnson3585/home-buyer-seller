@@ -1,6 +1,5 @@
-"""Forms for the bull application."""
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField
+from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired
 
 class LoginForm(FlaskForm):
@@ -9,7 +8,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('password', validators=[DataRequired()])
 
 class UserSignupForm(FlaskForm):
-    """Form class for poster login."""
+    """Form class for user signup."""
     username = StringField('username', validators=[DataRequired()])
     email = StringField('email', validators=[DataRequired()])
     phonenumber = StringField('phonenumber')
@@ -34,3 +33,10 @@ class JobPostingForm(FlaskForm):
     jobduration = StringField('jobduration', validators=[DataRequired()])
     startdate = StringField('startdate', validators=[DataRequired()])
     longdescription = StringField('longdescritpion', validators=[DataRequired()])
+
+
+
+class FileUploadForm(FlaskForm):
+    """Form class for user login."""
+    prequal = BooleanField('prequal', validators=[DataRequired()])
+    driverslicense = BooleanField('driverslicense', validators=[DataRequired()])

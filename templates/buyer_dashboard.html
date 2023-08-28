@@ -1,0 +1,41 @@
+{% extends "base3.html" %}
+
+{% block currentcalendar %}
+<div><p style="background-color: lightblue;font-size: 20px; width: 500px; text-align: center;">My Current Calendar</p></div>
+{% endblock %}
+
+{% block currentfileuploads %}
+<div><p style="background-color: lightblue;font-size: 20px; width: 500px; text-align: center;">My Current File Uploads</p></div>
+{% for ff in fileform%}
+            <p>{{ fileform.prequal.label }}: <input type="text" name="prequal" value= {{ ff.prequal }}></p>
+            <p>{{ fileform.driverslicense.label }}: <input type="text" name="driverslicense" value= {{ ff.driverslicense }}></p>
+  {% endfor%}
+{% endblock %}
+
+{% block loggedin %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    
+      <div>
+        <p><b>Logged In as:</b> {{buyer}}</p>
+      </div>
+
+
+  </body>
+</html>
+{% endblock %}

@@ -15,8 +15,20 @@
             <p>{{ form.city.label }}: <input type="text" name="city" value= {{ pd.city }}></p>
             <p>{{ form.state.label }}: <input type="text" name="state" value= {{ pd.state }}></p>
   {% endfor%}
-  <hr>
   <p><input type="submit" value="Save Changes"></p>
+  </form>
+  <hr>
+</div>
+
+<div class="jumbotron" style="width: 400px; font-size: 1.0rem; padding: 0% 0% 0% 0%;">
+  <p><b>Upload Files</b></p>
+  <p style="color: red;font-size: large;"><b>{{msg}}</b></p>
+  <hr>
+  <form method="POST" action="/upload_file" enctype="multipart/form-data">
+      <p><input type="file" name="file"></p>
+      <p><input type="submit"></p>
+  </form>
+  <hr>
 </div>
 {% endblock %}
 

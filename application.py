@@ -1,18 +1,24 @@
-from flask import Flask, render_template, request, redirect, url_for,abort
+from flask import Flask, render_template, request, redirect, url_for,abort, flash
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 import os, uuid
 import json, csv
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
 from flask_bcrypt import Bcrypt
-from functions.forms import LoginForm,JobPostingForm,UserSignupForm
+from functions.forms import LoginForm,JobPostingForm,UserSignupForm, FileUploadForm
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = './uploaded_files'#save to S3 eventually
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
 
 import stripe
 
 application = Flask(__name__)
 
 
-with application.app_context():    
+with application.app_context():   
+    application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     application.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51JwRkQEZnfYhIETsWxXVh4JjvubnWHSZUJhgP7rzWBLYvr1PfJw9Z65FjgjZLqafJ54XvPstgneOxvEPAQyw7Wf100vVilZYVL'
     application.config['STRIPE_SECRET_KEY'] = 'sk_test_51JwRkQEZnfYhIETszhqjVlZtzUbWwuM4kyfBVBYzq8fSZMwfuSeURxwrK9RCzxZRxD3WlVobY9Gp8HzoFlNzEKSw00xBsjR0Us'
     application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
@@ -56,41 +62,6 @@ with application.app_context():
         def is_anonymous(self):
             """False, as anonymous users aren't supported."""
             return False
-
-    #class Poster(db.Model):
-    #    """
-    #
-    #    :param str username: username
-    #    :param str password: encrypted password for the user
-
-    #    """
-    #    __tablename__ = 'poster'
-
-    #    username = db.Column(db.String, primary_key=True)
-    #    email = db.Column(db.String)
-    #    phonenumber = db.Column(db.String)
-    #    firstname = db.Column(db.String)
-    #    lastname = db.Column(db.String)
-    ##    city = db.Column(db.String)
-    #    state = db.Column(db.String)
-    #    password = db.Column(db.String)
-    #    authenticated = db.Column(db.Boolean, default=False)
-
-    #    def is_active(self):
-    #        """True, as all users are active."""
-    #        return True
-
-    #    def get_id(self):
-    #        """Return the username to satisfy Flask-Login's requirements."""
-    #        return self.username
-
-    #    def is_authenticated(self):
-    #        """Return True if the user is authenticated."""
-    #        return self.authenticated
-
-    #    def is_anonymous(self):
-    #        """False, as anonymous users aren't supported."""
-    #        return False
 
     class JobPost(db.Model):
         """An admin user capable of viewing reports.
@@ -146,6 +117,11 @@ with application.app_context():
         return User.query.get(user_id)
 
 
+    #######################Global Functions##############################
+    def allowed_file(filename):
+        return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    #######################Global Functions##############################
 
 
     #######################Global Routes##############################
@@ -245,7 +221,7 @@ with application.app_context():
         db.session.commit()
         myposts = JobPost.query.filter(JobPost.username == poster)
         msg='Post Added!'
-        return redirect(url_for('poster_dashboard'))
+        return redirect(url_for('buyer_dashboard'))
     #    return render_template('poster_dashboard.html', poster=poster, form=form, myposts=myposts, msg=msg)
 
     @application.route("/delete_post/<jobid>", methods=["GET", "POST"])
@@ -272,7 +248,7 @@ with application.app_context():
     #######################Global Routes##############################
 
 
-    ################POSTER#####################################
+    ################BUYER#####################################
 
     @application.route("/poster_login", methods=["GET", "POST"])#NOT USED
     def poster_login():
@@ -330,15 +306,37 @@ with application.app_context():
         poster_data = User.query.filter(Poster.username == poster)
         return render_template('poster_profile.html', poster=poster, poster_data=poster_data,form=form,msg=msg)
 
-    @application.route('/poster_dashboard')
+    @application.route('/buyer_dashboard')
     @login_required
-    def poster_dashboard():
-        form = JobPostingForm()
-        poster = current_user.username
-        myposts = JobPost.query.filter(JobPost.username == poster)
-        return render_template('poster_dashboard.html', poster=poster, form=form, myposts=myposts)
+    def buyer_dashboard():
+        fileform = FileUploadForm()
+        buyer = current_user.username
+        myposts = JobPost.query.filter(JobPost.username == buyer)
+        return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
 
-    ################POSTER#####################################
+
+    @application.route('/upload_file', methods=['GET', 'POST'])
+    @login_required
+    def upload_file():
+        fileform = FileUploadForm()
+        buyer = current_user.username
+        myposts = JobPost.query.filter(JobPost.username == buyer)
+        if request.method == 'POST':
+            if 'file' not in request.files:
+                flash('No file part')
+                return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
+            file = request.files['file']
+            if file.filename == '':
+                flash('No selected file')
+                return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))#save file as type and name and date, update a file metadata db as well
+                flash('Uploaded File Successfully!')
+                return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
+        return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
+    
+    ################BUYER#####################################
 
     ################USER#######################################
 
@@ -348,8 +346,8 @@ with application.app_context():
         For POSTS, login the current user by processing the form.
         """
         if current_user.is_authenticated:
-            if variable == 'post':
-                return redirect(url_for('poster_dashboard'))
+            if variable == 'buyer':
+                return redirect(url_for('buyer_dashboard'))
             else:
                 return redirect(url_for('job_posting_table'))
         form = LoginForm()
@@ -361,11 +359,11 @@ with application.app_context():
                     db.session.add(seeker)
                     db.session.commit()
                     login_user(seeker, remember=True)
-                    if variable == 'post':
-                        return redirect(url_for('poster_dashboard'))
+                    if variable == 'buyer':
+                        return redirect(url_for('buyer_dashboard'))
                     else:
                         return redirect(url_for('job_posting_table'))
-        return render_template('user_login.html', form=form, tabtitle='Symply Login Job Poster',variable=variable)
+        return render_template('user_login.html', form=form, tabtitle='Symply Login',variable=variable)
 
 
     @application.route('/user_signup', methods=["GET", "POST"])
@@ -496,4 +494,4 @@ with application.app_context():
 
 
     if __name__ == "__main__":
-        application.run()
+        application.run(debug=True)

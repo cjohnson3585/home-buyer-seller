@@ -11,7 +11,7 @@
   <body>
 
     <header>
-        <h1 style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif ; padding:30px 30px 10px 30px; font-size:4em;text-align: center;color: black;">Welcome to Symply</h1>
+        <h1 style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif ; padding:30px 30px 10px 30px; font-size:4em;text-align: center;color: black;">Welcome to HomeBuyerSeller</h1>
         <hr>
     </header>
 
@@ -21,7 +21,8 @@
           <div class="jumbotron" style="width: 150px; font-size: 1.0rem; padding: 0% 0% 0% 0%;">
                 <a class="nav-link active" href="{{ url_for('welcome') }}">Home </a>
                 <a class="nav-link active" href="{{ url_for('user_profile') }}">Profile</a>
-                <a class="nav-link active" href="{{ url_for('poster_dashboard') }}">My Dashboard</a>
+                <a class="nav-link active" href="{{ url_for('buyer_dashboard') }}">My Dashboard</a>
+                <a class="nav-link active" href="{{ url_for('buyer_dashboard') }}">Browse Current Homes</a>
                 <a class="nav-link active" href="{{ url_for('logout') }}">Logout </a>
           </div>
         </div>
