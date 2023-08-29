@@ -445,7 +445,7 @@ with application.app_context():
         for tt in upload_data:
             pq = tt.prequalfilename
             dl = tt.driverslicensefilename
-        return render_template('user_profile.html', poster=buyer, poster_data=poster_data, form=form, msg=msg, pq=pq,dl=dl)
+        return render_template('user_profile.html', buyer=buyer, poster_data=poster_data, form=form, msg=msg, pq=pq,dl=dl)
 
     ################USER#####################################
 
