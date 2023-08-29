@@ -33,10 +33,3 @@ class JobPostingForm(FlaskForm):
     jobduration = StringField('jobduration', validators=[DataRequired()])
     startdate = StringField('startdate', validators=[DataRequired()])
     longdescription = StringField('longdescritpion', validators=[DataRequired()])
-
-
-
-class FileUploadForm(FlaskForm):
-    """Form class for user login."""
-    prequal = BooleanField('prequal', validators=[DataRequired()])
-    driverslicense = BooleanField('driverslicense', validators=[DataRequired()])

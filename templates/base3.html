@@ -37,10 +37,10 @@
         </div>
 
         <div class="col-sm-1">
+          {% block currentbookings %}{% endblock %}
         </div>
 
         <div class="col-sm-3">
-          {% block currentcalendar %}{% endblock %}
         </div>
 
 
@@ -77,11 +77,12 @@
       </div>
 
         <div class="col-sm-1">
+          {% block currentfileuploads %}{% endblock %}
+
         </div>
 
 
         <div class="col-sm-1">
-          {% block currentfileuploads %}{% endblock %}
         </div>
 
 

@@ -25,9 +25,15 @@
   <p style="color: red;font-size: large;"><b>{{msg}}</b></p>
   <hr>
   <form method="POST" action="/upload_file" enctype="multipart/form-data">
-      <p><input type="file" name="file"></p>
-      <p><input type="submit"></p>
+      <p>Current Driver's License File: {{ dl }}</p>
+      <p><input type="file" name="driverslicense"></p>
+      <p><input type="submit" value="Submit Driver's License Photo"></p>
   </form>
+  <form method="POST" action="/upload_file" enctype="multipart/form-data">
+    <p>Current Prequal File: {{ pq }}</p>
+    <p><input type="file" name="prequal"></p>
+    <p><input type="submit" value="Submit Prequal Letter"></p>
+</form>
   <hr>
 </div>
 {% endblock %}
@@ -52,7 +58,7 @@
 
     
       <div>
-        <p><b>Logged In as:</b> {{poster}}</p>
+        <p><b>Logged In as:</b> {{buyer}}</p>
       </div>
 
      

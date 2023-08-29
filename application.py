@@ -5,7 +5,7 @@ import os, uuid
 import json, csv
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
 from flask_bcrypt import Bcrypt
-from functions.forms import LoginForm,JobPostingForm,UserSignupForm, FileUploadForm
+from functions.forms import LoginForm,JobPostingForm,UserSignupForm
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = './uploaded_files'#save to S3 eventually
@@ -102,6 +102,17 @@ with application.app_context():
             """False, as anonymous users aren't supported."""
             return False
 
+    class FileUpload(db.Model):
+        __tablename__ = 'checkfileupload'
+
+        username = db.Column(db.String, primary_key=True)
+        authenticateddriverslicense = db.Column(db.Boolean, default=False)
+        uploadeddriverslicense = db.Column(db.Boolean, default=False)
+        authenticatedprequal = db.Column(db.Boolean, default=False)
+        uploadedprequal = db.Column(db.Boolean, default=False)
+        prequalfilename = db.Column(db.String, default='')
+        driverslicensefilename = db.Column(db.String, default='')
+
     db.create_all()
     login_manager = LoginManager()
     login_manager.init_app(application)
@@ -155,9 +166,10 @@ with application.app_context():
         db.session.commit()
         msg='Data Updated'
         form = UserSignupForm()
-        poster = current_user.username
-        poster_data = User.query.filter(User.username == poster)
-        return render_template('user_profile.html', poster=poster, poster_data=poster_data,form=form,msg=msg)
+        buyer = current_user.username
+        upload_data = FileUpload.query.filter(FileUpload.username == buyer)
+        poster_data = User.query.filter(User.username == buyer)
+        return render_template('user_profile.html', buyer=buyer, poster_data=poster_data, form=form, upload_data=upload_data, msg=msg)
 
     @application.route('/job_information/<jobid>', methods=["GET"])
     def job_information(jobid):
@@ -309,34 +321,64 @@ with application.app_context():
     @application.route('/buyer_dashboard')
     @login_required
     def buyer_dashboard():
-        fileform = FileUploadForm()
         buyer = current_user.username
-        myposts = JobPost.query.filter(JobPost.username == buyer)
-        return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
+        upload_data = FileUpload.query.filter(FileUpload.username == buyer)
+        return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data)
 
 
     @application.route('/upload_file', methods=['GET', 'POST'])
     @login_required
     def upload_file():
-        fileform = FileUploadForm()
         buyer = current_user.username
-        myposts = JobPost.query.filter(JobPost.username == buyer)
+        upload_data = FileUpload.query.filter(FileUpload.username == buyer)
         if request.method == 'POST':
-            if 'file' not in request.files:
-                flash('No file part')
-                return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
-            file = request.files['file']
+            try:
+                file = request.files['driverslicense']
+                fname = file.filename
+            except:
+                file = request.files['prequal']
+                fname = file.filename
             if file.filename == '':
                 flash('No selected file')
-                return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))#save file as type and name and date, update a file metadata db as well
-                flash('Uploaded File Successfully!')
-                return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
-        return render_template('buyer_dashboard.html', buyer=buyer, myposts=myposts, fileform=fileform)
+                upload_data = FileUpload.query.filter(FileUpload.username == buyer)
+                return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data)
+            if 'driverslicense' in request.files.keys():
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))#save file as type and name and date, update a file metadata db as well
+                    flash('Uploaded File Successfully!')
+                    data_to_update = dict(uploadeddriverslicense=True, driverslicensefilename=fname)
+                    upload_data.update(data_to_update)
+                    db.session.commit()
+                    upload_data = FileUpload.query.filter(FileUpload.username == buyer)
+                    return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data)
+            elif 'prequal' in request.files.keys():
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))#save file as type and name and date, update a file metadata db as well
+                    flash('Uploaded File Successfully!')
+                    data_to_update = dict(uploadedprequal=True, prequalfilename=fname)
+                    upload_data.update(data_to_update)
+                    db.session.commit()
+                    upload_data = FileUpload.query.filter(FileUpload.username == buyer)
+                    return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data)
+                else:
+                    upload_data = FileUpload.query.filter(FileUpload.username == buyer)
+                    return render_template('buyer_dashboard.html', buyer=buyer,upload_data=upload_data)
+        upload_data = FileUpload.query.filter(FileUpload.username == buyer)
+        return render_template('buyer_dashboard.html', buyer=buyer,upload_data=upload_data)
+    
+
     
     ################BUYER#####################################
+
+
+
+
+
+
+
+
 
     ################USER#######################################
 
@@ -397,9 +439,13 @@ with application.app_context():
     def user_profile():
         msg=''
         form = UserSignupForm()
-        poster = current_user.username
-        poster_data = User.query.filter(User.username == poster)
-        return render_template('user_profile.html', poster=poster, poster_data=poster_data, form=form, msg=msg)
+        buyer = current_user.username
+        poster_data = User.query.filter(User.username == buyer)
+        upload_data = FileUpload.query.filter(User.username == buyer)
+        for tt in upload_data:
+            pq = tt.prequalfilename
+            dl = tt.driverslicensefilename
+        return render_template('user_profile.html', poster=buyer, poster_data=poster_data, form=form, msg=msg, pq=pq,dl=dl)
 
     ################USER#####################################
 

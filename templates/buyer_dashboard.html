@@ -1,15 +1,35 @@
 {% extends "base3.html" %}
 
-{% block currentcalendar %}
-<div><p style="background-color: lightblue;font-size: 20px; width: 500px; text-align: center;">My Current Calendar</p></div>
+{% block currentbookings %}
+<div><p style="background-color: lightblue;font-size: 20px; width: 500px; text-align: center;">My Current Bookings</p></div>
 {% endblock %}
 
 {% block currentfileuploads %}
 <div><p style="background-color: lightblue;font-size: 20px; width: 500px; text-align: center;">My Current File Uploads</p></div>
-{% for ff in fileform%}
-            <p>{{ fileform.prequal.label }}: <input type="text" name="prequal" value= {{ ff.prequal }}></p>
-            <p>{{ fileform.driverslicense.label }}: <input type="text" name="driverslicense" value= {{ ff.driverslicense }}></p>
-  {% endfor%}
+<table id="file_uploads_table" class="table table-striped" style="font-size: 20px; width: 500px; text-align: center;">
+    <thead>
+      <tr>
+        <th>Uploaded Driver's License Photo</th>
+        <th>Driver's License Filename</th>
+        <th>Authenticated Driver's License</th>
+        <th>Uploaded Prequal</th>
+        <th>Prequal Filename</th>
+        <th>Authenticated Prequal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in upload_data %}
+        <tr>
+          <td>{{ u.uploadeddriverslicense }}</td>
+          <td>{{ u.driverslicensefilename }}</td>
+          <td>{{ u.authenticateddriverslicense }}</td>
+          <td>{{ u.uploadedprequal }}</td>
+          <td>{{ u.prequalfilename }}</td>
+          <td>{{ u.authenticatedprequal }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
 
 {% block loggedin %}
