@@ -7,9 +7,10 @@ from flask_login import LoginManager, login_required, logout_user, login_user, c
 from flask_bcrypt import Bcrypt
 from functions.forms import LoginForm,JobPostingForm,UserSignupForm
 from werkzeug.utils import secure_filename
+import datetime
 
 UPLOAD_FOLDER = './uploaded_files'#save to S3 eventually
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','csv'}
 
 
 import stripe
@@ -112,7 +113,13 @@ with application.app_context():
         uploadedprequal = db.Column(db.Boolean, default=False)
         prequalfilename = db.Column(db.String, default='')
         driverslicensefilename = db.Column(db.String, default='')
+        prequalamount = db.Column(db.String, default='')
+        uploadedprequaldate = db.Column(db.DateTime)
+        uploadeddriverslicensedate = db.Column(db.DateTime)
+        authenticateddriverslicensedate = db.Column(db.DateTime)
+        authenticatedprequaldate = db.Column(db.DateTime)
 
+    
     db.create_all()
     login_manager = LoginManager()
     login_manager.init_app(application)
@@ -347,7 +354,7 @@ with application.app_context():
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))#save file as type and name and date, update a file metadata db as well
                     flash('Uploaded File Successfully!')
-                    data_to_update = dict(uploadeddriverslicense=True, driverslicensefilename=fname)
+                    data_to_update = dict(uploadeddriverslicense=True, driverslicensefilename=fname,authenticateddriverslicense=True, uploadeddriverslicensedate=datetime.datetime.utcnow(), authenticateddriverslicensedate=datetime.datetime.utcnow())
                     upload_data.update(data_to_update)
                     db.session.commit()
                     upload_data = FileUpload.query.filter(FileUpload.username == buyer)
@@ -357,7 +364,7 @@ with application.app_context():
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))#save file as type and name and date, update a file metadata db as well
                     flash('Uploaded File Successfully!')
-                    data_to_update = dict(uploadedprequal=True, prequalfilename=fname)
+                    data_to_update = dict(uploadedprequal=True, prequalfilename=fname,authenticatedprequal=True, prequalamount='500000', uploadedprequaldate=datetime.datetime.utcnow(), authenticatedprequaldate=datetime.datetime.utcnow())
                     upload_data.update(data_to_update)
                     db.session.commit()
                     upload_data = FileUpload.query.filter(FileUpload.username == buyer)
@@ -428,6 +435,11 @@ with application.app_context():
                         state=form.state.data,
                         password=bcrypt.generate_password_hash(form.password.data))
                 db.session.add(seeker)
+                db.session.commit()
+                ff = FileUpload(
+                    username = form.username.data,
+                    prequalamount='0')
+                db.session.add(ff)
                 db.session.commit()
                 seeker.authenticated = True
                 login_user(seeker, remember=True)

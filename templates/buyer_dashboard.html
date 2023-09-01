@@ -12,9 +12,14 @@
         <th>Uploaded Driver's License Photo</th>
         <th>Driver's License Filename</th>
         <th>Authenticated Driver's License</th>
+        <th>Uploaded Driver's License Date</th>
+        <th>Authenticated Driver's License Date</th>
         <th>Uploaded Prequal</th>
         <th>Prequal Filename</th>
         <th>Authenticated Prequal</th>
+        <th>Uploaded Prequal Date</th>
+        <th>Authenticated Prequal Date</th>
+        <th>Prequal Amount</th>
       </tr>
     </thead>
     <tbody>
@@ -23,9 +28,14 @@
           <td>{{ u.uploadeddriverslicense }}</td>
           <td>{{ u.driverslicensefilename }}</td>
           <td>{{ u.authenticateddriverslicense }}</td>
+          <td>{{ u.uploadeddriverslicensedate }}</td>
+          <td>{{ u.authenticateddriverslicensedate }}</td>
           <td>{{ u.uploadedprequal }}</td>
           <td>{{ u.prequalfilename }}</td>
           <td>{{ u.authenticatedprequal }}</td>
+          <td>{{ u.uploadedprequaldate }}</td>
+          <td>{{ u.authenticatedprequaldate }}</td>
+          <td>{{ u.prequalamount }}</td>
         </tr>
       {% endfor %}
     </tbody>

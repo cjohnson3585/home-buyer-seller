@@ -22,6 +22,7 @@
                 <a class="nav-link active" href="{{ url_for('welcome') }}">Home </a>
                 <a class="nav-link active" href="{{ url_for('user_profile') }}">Profile</a>
                 <a class="nav-link active" href="{{ url_for('buyer_dashboard') }}">My Dashboard</a>
+                <a class="nav-link active" href="{{ url_for('buyer_dashboard') }}">Browse Current Homes</a>
                 <a class="nav-link active" href="{{ url_for('logout') }}">Logout </a>
           </div>
         </div>
@@ -71,13 +72,14 @@
 
 
         <div class="col-sm-1">
+          {% block currentfileuploads %}{% endblock %}
+
         </div>
 
         <div class="col-sm-1">
-      </div>
+                </div>
 
         <div class="col-sm-1">
-          {% block currentfileuploads %}{% endblock %}
 
         </div>
 
