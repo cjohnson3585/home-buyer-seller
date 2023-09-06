@@ -47,6 +47,9 @@ with application.app_context():
         state = db.Column(db.String)
         password = db.Column(db.String)
         authenticated = db.Column(db.Boolean, default=False)
+        buyer = db.Column(db.Boolean, default=False)
+        seller = db.Column(db.Boolean, default=False)
+
 
         def is_active(self):
             """True, as all users are active."""
@@ -119,7 +122,21 @@ with application.app_context():
         authenticateddriverslicensedate = db.Column(db.DateTime)
         authenticatedprequaldate = db.Column(db.DateTime)
 
-    
+    class Listings(db.Model):
+        __tablename__ = 'homelistings'
+
+        username = db.Column(db.String, primary_key=True)
+        listingprice = db.Column(db.String, default='')
+        beds = db.Column(db.String, default='')
+        baths = db.Column(db.String, default='')
+        sqft = db.Column(db.String, default='')
+        address = db.Column(db.String, default='')
+        city = db.Column(db.String, default='')
+        state = db.Column(db.String, default='')
+        zipcode = db.Column(db.String, default='')
+        mlsid = db.Column(db.String, default='')
+        
+
     db.create_all()
     login_manager = LoginManager()
     login_manager.init_app(application)
@@ -146,17 +163,42 @@ with application.app_context():
 
     @application.route('/')
     def welcome():
+        #test listing
+        seeker = Listings.query.get('cbj3585')
+        if not seeker:
+            mm = Listings(
+                username = 'cbj3585',
+                listingprice = '595000',
+                beds = '6',
+                baths = '5',
+                sqft = '5500',
+                address = '110 3rd Street',
+                city = 'Radford',
+                state = 'Virginia',
+                zipcode = '24141',
+                mlsid = '0123456789',
+            )
+            db.session.add(mm)
+            db.session.commit()
         return render_template('welcome.html', )
-
-    @application.route("/job_posting_table")
-    def job_posting_table():
+        
+    @application.route("/listing_table")
+    def listing_table():
         if current_user.is_authenticated:
-            poster = current_user.username
-            jobpost = JobPost.query.all() 
-            return render_template('job_posting_table_login.html', jobpost=jobpost, tabtitle='Symply Job Listings',poster=poster)
+            if current_user.buyer == True:
+                buyer = current_user.username
+                listings = Listings.query.all()
+                poster_data = User.query.filter(User.username == buyer)
+                for mm in poster_data:
+                    by = mm.buyer
+                if by == True:
+                    ut = 'Home Buyer'
+                else:
+                    ut = 'Home Seller'
+                return render_template('listing_table_buyer.html', homelistings=listings, buyer=buyer, tabtitle='Symply Home Listings',ut=ut)
         else:
-            jobpost = JobPost.query.all()
-            return render_template('job_posting_table.html', jobpost=jobpost, tabtitle='Symply Job Listings')
+            listings = Listings.query.all()
+            return render_template('listing_table.html', homelistings=listings, tabtitle='Symply Home Listings')
 
         
     @application.route("/save_profile_changes", methods=["GET", "POST"])
@@ -176,7 +218,13 @@ with application.app_context():
         buyer = current_user.username
         upload_data = FileUpload.query.filter(FileUpload.username == buyer)
         poster_data = User.query.filter(User.username == buyer)
-        return render_template('user_profile.html', buyer=buyer, poster_data=poster_data, form=form, upload_data=upload_data, msg=msg)
+        for mm in poster_data:
+            by = mm.buyer
+        if by == True:
+            ut = 'Home Buyer'
+        else:
+            ut = 'Home Seller'
+        return render_template('user_profile.html', buyer=buyer, poster_data=poster_data, form=form, upload_data=upload_data, msg=msg,ut=ut)
 
     @application.route('/job_information/<jobid>', methods=["GET"])
     def job_information(jobid):
@@ -330,7 +378,14 @@ with application.app_context():
     def buyer_dashboard():
         buyer = current_user.username
         upload_data = FileUpload.query.filter(FileUpload.username == buyer)
-        return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data)
+        poster_data = User.query.filter(User.username == buyer)
+        for mm in poster_data:
+            by = mm.buyer
+        if by == True:
+            ut = 'Home Buyer'
+        else:
+            ut = 'Home Seller'
+        return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data, ut=ut)
 
 
     @application.route('/upload_file', methods=['GET', 'POST'])
@@ -338,6 +393,13 @@ with application.app_context():
     def upload_file():
         buyer = current_user.username
         upload_data = FileUpload.query.filter(FileUpload.username == buyer)
+        poster_data = User.query.filter(User.username == buyer)
+        for mm in poster_data:
+            by = mm.buyer
+        if by == True:
+            ut = 'Home Buyer'
+        else:
+            ut = 'Home Seller'
         if request.method == 'POST':
             try:
                 file = request.files['driverslicense']
@@ -348,7 +410,7 @@ with application.app_context():
             if file.filename == '':
                 flash('No selected file')
                 upload_data = FileUpload.query.filter(FileUpload.username == buyer)
-                return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data)
+                return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data,ut=ut)
             if 'driverslicense' in request.files.keys():
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
@@ -358,7 +420,7 @@ with application.app_context():
                     upload_data.update(data_to_update)
                     db.session.commit()
                     upload_data = FileUpload.query.filter(FileUpload.username == buyer)
-                    return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data)
+                    return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data,ut=ut)
             elif 'prequal' in request.files.keys():
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
@@ -368,12 +430,12 @@ with application.app_context():
                     upload_data.update(data_to_update)
                     db.session.commit()
                     upload_data = FileUpload.query.filter(FileUpload.username == buyer)
-                    return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data)
+                    return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data,ut=ut)
                 else:
                     upload_data = FileUpload.query.filter(FileUpload.username == buyer)
-                    return render_template('buyer_dashboard.html', buyer=buyer,upload_data=upload_data)
+                    return render_template('buyer_dashboard.html', buyer=buyer,upload_data=upload_data,ut=ut)
         upload_data = FileUpload.query.filter(FileUpload.username == buyer)
-        return render_template('buyer_dashboard.html', buyer=buyer,upload_data=upload_data)
+        return render_template('buyer_dashboard.html', buyer=buyer,upload_data=upload_data,ut=ut)
     
 
     
@@ -389,13 +451,11 @@ with application.app_context():
 
     ################USER#######################################
 
-    @application.route("/user_login/<variable>", methods=["GET", "POST"])
-    def user_login(variable):
-        """For GET requests, display the login form. 
-        For POSTS, login the current user by processing the form.
-        """
+    @application.route("/user_login", methods=["GET", "POST"])
+    def user_login():
         if current_user.is_authenticated:
-            if variable == 'buyer':
+            seeker = User.query.get(current_user.username)
+            if seeker.buyer == True:
                 return redirect(url_for('buyer_dashboard'))
             else:
                 return redirect(url_for('job_posting_table'))
@@ -408,24 +468,26 @@ with application.app_context():
                     db.session.add(seeker)
                     db.session.commit()
                     login_user(seeker, remember=True)
-                    if variable == 'buyer':
+                    if seeker.buyer == True:
                         return redirect(url_for('buyer_dashboard'))
                     else:
                         return redirect(url_for('job_posting_table'))
-        return render_template('user_login.html', form=form, tabtitle='Symply Login',variable=variable)
+        return render_template('user_login.html', form=form, tabtitle='Symply Login')
 
 
-    @application.route('/user_signup', methods=["GET", "POST"])
+    @application.route("/user_signup", methods=["GET", "POST"])
     def user_signup():
         if current_user.is_authenticated:
-            return redirect(url_for('job_posting_table'))
+            return redirect(url_for('user_profile'))
         form = UserSignupForm()
         if form.validate_on_submit():
             seeker = User.query.get(form.username.data)
             if seeker:
                 return render_template("user_signup.html", form=form, tabtitle='Symply SignUp',msg='Username taken, please choose another!')
             else:
-                seeker = User(
+                usertype = form.usertype.data
+                if usertype == 'buyer':
+                    seeker = User(
                         username=form.username.data,
                         email=form.email.data,
                         phonenumber=form.phonenumber.data,
@@ -433,18 +495,32 @@ with application.app_context():
                         lastname=form.lastname.data,
                         city=form.city.data,
                         state=form.state.data,
+                        buyer=True,
                         password=bcrypt.generate_password_hash(form.password.data))
-                db.session.add(seeker)
-                db.session.commit()
-                ff = FileUpload(
-                    username = form.username.data,
-                    prequalamount='0')
-                db.session.add(ff)
-                db.session.commit()
+                    db.session.add(seeker)
+                    db.session.commit()
+                    ff = FileUpload(
+                        username = form.username.data,
+                        prequalamount='0')
+                    db.session.add(ff)
+                    db.session.commit()
+                else:
+                    seeker = User(
+                        username=form.username.data,
+                        email=form.email.data,
+                        phonenumber=form.phonenumber.data,
+                        firstname=form.firstname.data,
+                        lastname=form.lastname.data,
+                        city=form.city.data,
+                        state=form.state.data,
+                        seller=True,
+                        password=bcrypt.generate_password_hash(form.password.data))
+                    db.session.add(seeker)
+                    db.session.commit()
                 seeker.authenticated = True
                 login_user(seeker, remember=True)
-                return redirect(url_for("job_posting_table"))
-        return render_template("user_signup.html", form=form, tabtitle='Symply SignUp', msg='')
+                return redirect(url_for("user_profile"))
+        return render_template("user_signup.html", form=form, tabtitle='SignUp', msg='')
 
     @application.route('/user_profile',methods=["GET", "POST"])
     @login_required
@@ -453,11 +529,17 @@ with application.app_context():
         form = UserSignupForm()
         buyer = current_user.username
         poster_data = User.query.filter(User.username == buyer)
-        upload_data = FileUpload.query.filter(User.username == buyer)
+        upload_data = FileUpload.query.filter(FileUpload.username == buyer)
         for tt in upload_data:
             pq = tt.prequalfilename
             dl = tt.driverslicensefilename
-        return render_template('user_profile.html', buyer=buyer, poster_data=poster_data, form=form, msg=msg, pq=pq,dl=dl)
+        for mm in poster_data:
+            by = mm.buyer
+        if by == True:
+            ut = 'Home Buyer'
+        else:
+            ut = 'Home Seller'
+        return render_template('user_profile.html', buyer=buyer, poster_data=poster_data, form=form, msg=msg, pq=pq,dl=dl, ut=ut)
 
     ################USER#####################################
 

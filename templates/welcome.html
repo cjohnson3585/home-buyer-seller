@@ -24,13 +24,13 @@
 
         <div class="col-md-6">
           <div class="jumbotron">
-              <a class="nav-link active" href="{{ url_for('user_login', variable='buyer') }}"> I am a HomeBuyer</a>
+              <a class="nav-link active" href="{{ url_for('user_signup') }}"> I am a HomeBuyer</a>
           </div>
         </div>
 
         <div class="col-md-6">
           <div class="jumbotron">
-             <!--<a class="nav-link active" href="{{ url_for('user_login', variable='seller') }}"> I am a HomeSeller</a>-->
+             <!--<a class="nav-link active" href="{{ url_for('user_signup') }}"> I am a HomeSeller</a>-->
              I am a HomeSeller
           </div>
         </div>
@@ -38,8 +38,7 @@
       </div>
 
       <div class="jumbotron">
-<!--           <a class="nav-link active" href="{{ url_for('job_posting_table') }}"> I Just Want to Browse Current Homes</a>-->
-          I Just Want to Browse Current Homes
+           <a class="nav-link active" href="{{ url_for('listing_table') }}"> I Want to Browse Current Home Listings</a>
       </div>
 
     </div>

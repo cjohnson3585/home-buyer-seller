@@ -1,0 +1,90 @@
+{% extends "base3.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Store</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div><p style="background-color: lightblue;font-size: 20px; width: 1500px; text-align: center;">Current Home Listings</p></div>
+
+
+  <table id="data" class="table table-striped" style="width: 1500px; font-size: 12px;">
+    <thead>
+      <tr>
+        <th>Listing Price</th>
+        <th>Bedrooms</th>
+        <th>Baths</th>s
+        <th>SqFt</th>
+        <th>Address</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zip Code</th>
+        <th>MLS ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for hl in homelistings %}
+        <tr>
+          <td>{{ hl.listingprice }}</td>
+          <td>{{ hl.beds }}</td>
+          <td>{{ hl.baths }}</td>
+          <td>{{ hl.sqft }}</td>
+          <td>{{ hl.address }}</td>
+          <td>{{ hl.city }}</td>
+          <td>{{ hl.state }}</td>
+          <td>{{ hl.zipcode }}</td>
+          <td>{{ hl.mlsid }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+  </body>
+</html>
+{% endblock %}
+
+{% block loggedin %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    
+      <div>
+        <p><b>Logged In as:</b> {{buyer}}</p>
+        <p><b>I Am A:</b> {{ut}}</p>
+      </div>
+
+     
+
+  </body>
+</html>
+{% endblock %}

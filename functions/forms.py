@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
-from wtforms.validators import DataRequired
+from wtforms import StringField, PasswordField
+from wtforms.validators import DataRequired, InputRequired
 
 class LoginForm(FlaskForm):
     """Form class for user login."""
@@ -17,6 +17,8 @@ class UserSignupForm(FlaskForm):
     city = StringField('city')
     state = StringField('state')
     password = PasswordField('password', validators=[DataRequired()])
+    usertype = StringField('user_type', validators=[DataRequired(message='*Required'),InputRequired()])
+
 
 
 class JobPostingForm(FlaskForm):

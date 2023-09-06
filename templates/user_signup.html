@@ -35,8 +35,14 @@
             <p> {{ form.city.label }}:  {{ form.city(size=20) }}</p>
             <p> {{ form.state.label }}:  {{ form.state(size=20) }}</p>
             <p> *{{ form.password.label }}:  {{ form.password(size=20) }}</p>
+            <p>*<select name="usertype" id="usertype">
+              <option value="buyer">Home Buyer</option>
+              <option value="seller">Home Seller</option>
+            </select>
+          </p>
             <p><input type="submit" value="SignUp"></p>
             <p> * = Required</p>
+            <p><a class="nav-link active" href="{{ url_for('user_login') }}">Log In with Existing Account</a></p>
         </form>
       </div>
 

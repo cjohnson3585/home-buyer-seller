@@ -18,11 +18,11 @@
     <div class="row">
 
         <div class="col-sm-1">
-          <div class="jumbotron" style="width: 150px; font-size: 1.0rem; padding: 0% 0% 0% 0%;">
+          <div class="jumbotron" style="width: 200px; font-size: 1.0rem; padding: 0% 0% 0% 0%;">
                 <a class="nav-link active" href="{{ url_for('welcome') }}">Home </a>
                 <a class="nav-link active" href="{{ url_for('user_profile') }}">Profile</a>
                 <a class="nav-link active" href="{{ url_for('buyer_dashboard') }}">My Dashboard</a>
-                <a class="nav-link active" href="{{ url_for('buyer_dashboard') }}">Browse Current Homes</a>
+                <a class="nav-link active" href="{{ url_for('listing_table') }}">Browse Current Home Listings</a>
                 <a class="nav-link active" href="{{ url_for('logout') }}">Logout </a>
           </div>
         </div>
@@ -31,6 +31,7 @@
         </div>
 
         <div class="col-sm-1">
+          {% block content %}{% endblock %}
         </div>
 
 
@@ -38,7 +39,6 @@
         </div>
 
         <div class="col-sm-1">
-          {% block currentbookings %}{% endblock %}
         </div>
 
         <div class="col-sm-3">
