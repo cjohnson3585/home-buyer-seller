@@ -9,7 +9,7 @@ from functions.forms import LoginForm,JobPostingForm,UserSignupForm
 from werkzeug.utils import secure_filename
 import datetime
 
-UPLOAD_FOLDER = './uploaded_files'#save to S3 eventually
+UPLOAD_FOLDER = './uploaded_files/user'#save to S3 eventually
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','csv'}
 
 
@@ -317,61 +317,6 @@ with application.app_context():
 
     ################BUYER#####################################
 
-    @application.route("/poster_login", methods=["GET", "POST"])#NOT USED
-    def poster_login():
-        """For GET requests, display the login form. 
-        For POSTS, login the current user by processing the form.
-
-        """
-        if current_user.is_authenticated:
-            print(current_user)
-            return redirect(url_for('poster_dashboard'))
-        form = LoginForm()
-        if form.validate_on_submit():
-            poster = User.query.get(form.username.data) 
-            if poster:
-                if bcrypt.check_password_hash(poster.password, form.password.data):
-                    poster.authenticated = True
-                    db.session.add(poster)
-                    db.session.commit()
-                    login_user(poster, remember=True)
-                    return redirect(url_for('poster_dashboard'))
-        return render_template('poster_login.html', form=form, tabtitle='Symply Login Job Poster')
-
-    @application.route('/poster_signup', methods=["GET", "POST"])#NOT USED
-    def poster_signup():
-        if current_user.is_authenticated:
-            return redirect(url_for('poster_profile'))
-        form = UserSignupForm()
-        if form.validate_on_submit():
-            poster = User.query.get(form.username.data)
-            if poster:
-                return render_template("user_signup.html", form=form, tabtitle='Symply SignUp',msg='Username taken, please choose another!')
-            else:
-                poster = User(
-                        username=form.username.data,
-                        email=form.email.data,
-                        phonenumber=form.phonenumber.data,
-                        firstname=form.firstname.data,
-                        lastname=form.lastname.data,
-                        city=form.city.data,
-                        state=form.state.data,
-                        password=bcrypt.generate_password_hash(form.password.data))
-                db.session.add(poster)
-                db.session.commit()
-                poster.authenticated = True
-                login_user(poster, remember=True)
-                return redirect(url_for("user_profile"))
-        return render_template("user_signup.html", form=form, tabtitle='Symply SignUp', msg='')
-
-    @application.route('/poster_profile')#NOT USED
-    @login_required
-    def poster_profile():
-        msg=''
-        form = UserSignupForm()
-        poster = current_user.username
-        poster_data = User.query.filter(Poster.username == poster)
-        return render_template('poster_profile.html', poster=poster, poster_data=poster_data,form=form,msg=msg)
 
     @application.route('/buyer_dashboard')
     @login_required
@@ -408,14 +353,18 @@ with application.app_context():
                 file = request.files['prequal']
                 fname = file.filename
             if file.filename == '':
-                flash('No selected file')
+                flash('No selected file...Click to Remove')
                 upload_data = FileUpload.query.filter(FileUpload.username == buyer)
                 return render_template('buyer_dashboard.html', buyer=buyer, upload_data=upload_data,ut=ut)
             if 'driverslicense' in request.files.keys():
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
-                    file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))#save file as type and name and date, update a file metadata db as well
-                    flash('Uploaded File Successfully!')
+                    #move to cloud eventually
+                    if not os.path.exists(os.path.join(application.config['UPLOAD_FOLDER'],str(buyer),'dl')):
+                        os.makedirs(os.path.join(application.config['UPLOAD_FOLDER'],str(buyer),'dl'))
+                    file.save(os.path.join(application.config['UPLOAD_FOLDER'],str(buyer),'dl', filename))#save file as type and name and date, update a file metadata db as well
+                    ###
+                    flash('Uploaded File Successfully!...Click to Remove')
                     data_to_update = dict(uploadeddriverslicense=True, driverslicensefilename=fname,authenticateddriverslicense=True, uploadeddriverslicensedate=datetime.datetime.utcnow(), authenticateddriverslicensedate=datetime.datetime.utcnow())
                     upload_data.update(data_to_update)
                     db.session.commit()
@@ -424,8 +373,10 @@ with application.app_context():
             elif 'prequal' in request.files.keys():
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
-                    file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))#save file as type and name and date, update a file metadata db as well
-                    flash('Uploaded File Successfully!')
+                    if not os.path.exists(os.path.join(application.config['UPLOAD_FOLDER'],str(buyer),'pq')):
+                        os.makedirs(os.path.join(application.config['UPLOAD_FOLDER'],str(buyer),'pq'))
+                    file.save(os.path.join(application.config['UPLOAD_FOLDER'],str(buyer),'pq', filename))#save file as type and name and date, update a file metadata db as well
+                    flash('Uploaded File Successfully!...Click to Remove')
                     data_to_update = dict(uploadedprequal=True, prequalfilename=fname,authenticatedprequal=True, prequalamount='500000', uploadedprequaldate=datetime.datetime.utcnow(), authenticatedprequaldate=datetime.datetime.utcnow())
                     upload_data.update(data_to_update)
                     db.session.commit()
@@ -525,7 +476,6 @@ with application.app_context():
     @application.route('/user_profile',methods=["GET", "POST"])
     @login_required
     def user_profile():
-        msg=''
         form = UserSignupForm()
         buyer = current_user.username
         poster_data = User.query.filter(User.username == buyer)
@@ -539,8 +489,7 @@ with application.app_context():
             ut = 'Home Buyer'
         else:
             ut = 'Home Seller'
-        return render_template('user_profile.html', buyer=buyer, poster_data=poster_data, form=form, msg=msg, pq=pq,dl=dl, ut=ut)
-
+        return render_template('user_profile.html', buyer=buyer, poster_data=poster_data, form=form, pq=pq,dl=dl, ut=ut)
     ################USER#####################################
 
 
