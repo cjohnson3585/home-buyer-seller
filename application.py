@@ -8,8 +8,9 @@ from flask_bcrypt import Bcrypt
 from functions.forms import LoginForm,JobPostingForm,UserSignupForm
 from werkzeug.utils import secure_filename
 import datetime
+import shutil
 
-UPLOAD_FOLDER = './uploaded_files/user'#save to S3 eventually
+UPLOAD_FOLDER = 'static/uploaded_files/user'#save to S3 eventually
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','csv'}
 
 
@@ -180,6 +181,32 @@ with application.app_context():
             )
             db.session.add(mm)
             db.session.commit()
+            if not os.path.exists(os.path.join(application.config['UPLOAD_FOLDER'],'cbj3585','listingphotos')):
+                filename = 'first_house.jpeg'
+                os.makedirs(os.path.join(application.config['UPLOAD_FOLDER'],'cbj3585','listingphotos'))
+                dest = os.path.join(application.config['UPLOAD_FOLDER'],'cbj3585','listingphotos',filename)
+                shutil.copyfile(filename, dest)
+        seeker = Listings.query.get('har122222')
+        if not seeker:
+            mm = Listings(
+                username = 'har122222',
+                listingprice = '500000',
+                beds = '6',
+                baths = '5',
+                sqft = '5500',
+                address = '123 5th Street',
+                city = 'Blacksburg',
+                state = 'Virginia',
+                zipcode = '24141',
+                mlsid = '9876543210',
+            )
+            db.session.add(mm)
+            db.session.commit()
+            if not os.path.exists(os.path.join(application.config['UPLOAD_FOLDER'],'har122222','listingphotos')):
+                filename = 'first_house.jpeg'
+                os.makedirs(os.path.join(application.config['UPLOAD_FOLDER'],'har122222','listingphotos'))
+                dest = os.path.join(application.config['UPLOAD_FOLDER'],'har122222','listingphotos',filename)
+                shutil.copyfile(filename, dest)
         return render_template('welcome.html', )
         
     @application.route("/listing_table")

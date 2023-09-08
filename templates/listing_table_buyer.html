@@ -21,9 +21,20 @@
   <body>
 
     <div><p style="background-color: lightblue;font-size: 20px; width: 1500px; text-align: center;">Current Home Listings</p></div>
+    {% for hl in homelistings %}
+    <div class="card" style="width:400px">
+        <img class="card-img-top" src="{{ url_for('static', filename='uploaded_files/user/') }}{{hl.username}}{{'/listingphotos/first_house.jpeg' }}" alt="Card image" style="width:100%">
+        <div class="card-body">
+          <h4 class="card-title">{{hl.listingprice}}</h4>
+          <p class="card-text">Beds:{{hl.beds}}, Baths:{{hl.baths}}, SqFt: {{ hl.sqft }}</p>
+          <p class="card-text">Address:{{hl.address}}, {{hl.city}}, {{ hl.state }}</p>
+          <a href="#" class="btn btn-primary">More Info</a>
+          <a href="#" class="btn btn-primary">Request to Book</a>
+        </div>
+      </div>
+      {% endfor %}
 
-
-  <table id="data" class="table table-striped" style="width: 1500px; font-size: 12px;">
+  <!-- <table id="data" class="table table-striped" style="width: 1500px; font-size: 12px;">
     <thead>
       <tr>
         <th>Listing Price</th>
@@ -52,7 +63,7 @@
         </tr>
       {% endfor %}
     </tbody>
-  </table>
+  </table> -->
 
 
   </body>
